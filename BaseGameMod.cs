@@ -16,7 +16,7 @@ namespace Base_Mod {
         protected          string ConfigFile => Path.Combine(AssemblyDirectory, $"{ModName}.json");
 
         public override void Load() {
-            Debug.Log($"{ModName} loading.");
+            var strMsg = $"{ModName} loading.";
 
             if (UseHarmony) {
                 Assembly.LoadFrom(Path.Combine(AssemblyDirectory, "0Harmony.dll"));
@@ -26,15 +26,16 @@ namespace Base_Mod {
 
                 var i = 0;
                 foreach (var patchedMethod in harmony.GetPatchedMethods()) {
-                    Debug.Log($"Patched: {patchedMethod.DeclaringType?.FullName}:{patchedMethod}");
+                    strMsg += $"\r\nPatched: {patchedMethod.DeclaringType?.FullName}:{patchedMethod}";
                     i++;
                 }
-                Debug.Log($"Patched {i} methods.");
+                strMsg += $"\r\nPatched {i} methods.";
             }
 
             Init();
 
-            Debug.Log($"{ModName} loaded.");
+            strMsg += $"\r\n{ModName} loaded.";
+            Debug.Log(strMsg);
         }
 
         protected abstract void Init();
@@ -45,13 +46,22 @@ namespace Base_Mod {
 
         protected void DoAllIslandSceneLoadedPatches() {
             foreach (var method in GetAllMethodsWithIslandSceneLoaded<OnIslandSceneLoadedAttribute>()) {
-                method.Invoke(null, null);
+                try {
+                    method.Invoke(null, null);
+                    Debug.Log($"Applying Patch: `{method.DeclaringType?.FullName}:{method}`");
+                } catch (Exception e) {
+                    Debug.LogError($"Error running `{method.Name}`: {e}");
+                }
             }
         }
 
         protected void DoAllUnloadedPatches() {
             foreach (var method in GetAllMethodsWithIslandSceneLoaded<OnUnloadedAttribute>()) {
-                method.Invoke(null, null);
+                try {
+                    method.Invoke(null, null);
+                } catch (Exception e) {
+                    Debug.LogError($"Error running `{method.Name}`: {e}");
+                }
             }
         }
 
