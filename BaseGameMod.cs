@@ -7,6 +7,7 @@ using Base_Mod.Models;
 using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Base_Mod {
     [UsedImplicitly]
@@ -38,9 +39,35 @@ namespace Base_Mod {
             Debug.Log(strMsg);
         }
 
-        protected abstract void Init();
+        protected virtual void Init() {
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.sceneLoaded += OnDataSetupBase;
+        }
+
+        private void OnDataSetupBase(Scene scene, LoadSceneMode loadSceneMode) {
+            if (scene.name != "Island") return;
+            SceneManager.sceneLoaded -= OnDataSetupBase;
+
+            DoAllIslandSceneLoadedPatches();
+            OnDataSetup();
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode) {
+            if (scene.name != "Island") return;
+
+            OnIslandSceneLoaded(scene, loadSceneMode);
+        }
+
+        // ReSharper disable once VirtualMemberNeverOverridden.Global
+        protected virtual void OnIslandSceneLoaded(Scene scene, LoadSceneMode loadSceneMode) {
+        }
+
+        // ReSharper disable once VirtualMemberNeverOverridden.Global
+        protected virtual void OnDataSetup() {
+        }
 
         public override void Unload() {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
             DoAllUnloadedPatches();
         }
 
