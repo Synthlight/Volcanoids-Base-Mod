@@ -20,7 +20,7 @@ namespace Base_Mod {
             var strMsg = $"{ModName} loading.";
 
             if (UseHarmony) {
-                Assembly.LoadFrom(Path.Combine(AssemblyDirectory, "0Harmony.dll"));
+                Assembly.LoadFrom(Path.Combine(AssemblyDirectory, @"..\0Harmony\0Harmony.dll"));
 
                 var harmony = new Harmony(GUID.Create().ToString());
                 harmony.PatchAll(GetType().Assembly);
