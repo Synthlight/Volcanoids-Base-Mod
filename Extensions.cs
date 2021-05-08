@@ -20,6 +20,12 @@ namespace Base_Mod {
         }
 
         [UsedImplicitly]
+        public static bool SetPrivateField(this object obj, FieldInfo fieldInfo, object newValue) {
+            fieldInfo.SetValue(obj, Convert.ChangeType(newValue, fieldInfo.FieldType));
+            return true;
+        }
+
+        [UsedImplicitly]
         public static T GetPrivateFieldNullable<O, T>(this O obj, string fieldName) where T : class {
             var fieldInfo = typeof(O).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
             if (fieldInfo == null) {
@@ -36,6 +42,11 @@ namespace Base_Mod {
                 Debug.LogError($"Error: Unable to find private field `{fieldName}` in `{typeof(T)}`.");
                 return default;
             }
+            return (T) fieldInfo.GetValue(obj);
+        }
+
+        [UsedImplicitly]
+        public static T GetPrivateField<T>(this object obj, FieldInfo fieldInfo) {
             return (T) fieldInfo.GetValue(obj);
         }
 
