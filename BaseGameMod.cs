@@ -14,14 +14,11 @@ namespace Base_Mod {
     public abstract class BaseGameMod : GameMod {
         protected abstract string ModName    { get; }
         protected virtual  bool   UseHarmony { get; } = false;
-        protected          string ConfigFile => Path.Combine(AssemblyDirectory, $"{ModName}.json");
 
         public override void Load() {
             var strMsg = $"{ModName} loading.";
 
             if (UseHarmony) {
-                Assembly.LoadFrom(Path.Combine(AssemblyDirectory, @"..\0Harmony\0Harmony.dll"));
-
                 var harmony = new Harmony(GUID.Create().ToString());
                 harmony.PatchAll(GetType().Assembly);
 
@@ -99,13 +96,12 @@ namespace Base_Mod {
                    select method;
         }
 
-        protected static string AssemblyDirectory {
-            get {
-                var codeBase = Assembly.GetExecutingAssembly().CodeBase;
-                var uri      = new UriBuilder(codeBase);
-                var path     = Uri.UnescapeDataString(uri.Path);
-                return Path.GetDirectoryName(path);
-            }
+        protected string GetConfigPath() {
+            return Path.Combine(Application.persistentDataPath, "ModConfigs", ModName);
+        }
+
+        protected string GetConfigFile() {
+            return Path.Combine(GetConfigPath(), $"{ModName}.json");
         }
     }
 }
