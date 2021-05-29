@@ -12,7 +12,7 @@
 		<DebugType>full</DebugType>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="HarmonyX" Version="2.4.2" />
+		<PackageReference Include="HarmonyX" Version="2.4.2"/>
 	</ItemGroup>
 	<ItemGroup>
 		<Reference Include="Assembly-CSharp">
@@ -28,7 +28,8 @@
 			<Private>false</Private>
 		</Reference>
 		<Reference Include="Steamworks.NET">
-		  <HintPath>C:\SteamLibrary\common\Volcanoids\Volcanoids_Data\Managed\Steamworks.NET.dll</HintPath>
+			<HintPath>C:\SteamLibrary\common\Volcanoids\Volcanoids_Data\Managed\Steamworks.NET.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="UnityEngine">
 			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Volcanoids\Volcanoids_Data\Managed\UnityEngine.dll</HintPath>
@@ -39,4 +40,12 @@
 			<Private>false</Private>
 		</Reference>
 	</ItemGroup>
+	<ItemGroup>
+		<None Update=".manifest.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="call $(ProjectDir)Post-Build.bat &quot;$(TargetName)&quot; &quot;$(OutDir)&quot;"/>
+	</Target>
 </Project>

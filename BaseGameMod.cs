@@ -6,17 +6,16 @@ using System.Reflection;
 using Base_Mod.Models;
 using HarmonyLib;
 using JetBrains.Annotations;
-using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Base_Mod {
     [UsedImplicitly]
     public abstract class BaseGameMod : GameMod {
         protected abstract string ModName    { get; }
-        protected virtual  bool   UseHarmony { get; } = false;
+        protected virtual  bool   UseHarmony => false;
 
         public override void Load() {
-            var strMsg = $"{ModName} loading.";
+            var log = new LogBuffer();
+            log.Write($"{ModName} loading.");
 
             if (UseHarmony) {
                 var harmony = new Harmony(GUID.Create().ToString());
@@ -24,69 +23,36 @@ namespace Base_Mod {
 
                 var i = 0;
                 foreach (var patchedMethod in harmony.GetPatchedMethods()) {
-                    strMsg += $"\r\nPatched: {patchedMethod.DeclaringType?.FullName}:{patchedMethod}";
+                    log.Write($"\r\nPatched: {patchedMethod.DeclaringType?.FullName}:{patchedMethod}");
                     i++;
                 }
-                strMsg += $"\r\nPatched {i} methods.";
+                log.Write($"\r\nPatched {i} methods.");
             }
 
             Init();
 
-            strMsg += $"\r\n{ModName} loaded.";
-            Debug.Log(strMsg);
+            log.Write($"\r\n{ModName} loaded.");
+            log.Flush();
         }
 
         protected virtual void Init() {
-            SceneManager.sceneLoaded += OnSceneLoaded;
-            SceneManager.sceneLoaded += OnDataSetupBase;
         }
 
-        private void OnDataSetupBase(Scene scene, LoadSceneMode loadSceneMode) {
-            if (scene.name != "Island") return;
-            SceneManager.sceneLoaded -= OnDataSetupBase;
-
+        public override void OnInitData() {
             DoAllIslandSceneLoadedPatches();
-            OnDataSetup();
-        }
-
-        private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode) {
-            if (scene.name != "Island") return;
-
-            OnIslandSceneLoaded(scene, loadSceneMode);
-        }
-
-        // ReSharper disable once VirtualMemberNeverOverridden.Global
-        protected virtual void OnIslandSceneLoaded(Scene scene, LoadSceneMode loadSceneMode) {
-        }
-
-        // ReSharper disable once VirtualMemberNeverOverridden.Global
-        protected virtual void OnDataSetup() {
-        }
-
-        public override void Unload() {
-            SceneManager.sceneLoaded -= OnSceneLoaded;
-            DoAllUnloadedPatches();
         }
 
         protected void DoAllIslandSceneLoadedPatches() {
+            var log = new LogBuffer();
             foreach (var method in GetAllMethodsWithIslandSceneLoaded<OnIslandSceneLoadedAttribute>()) {
                 try {
                     method.Invoke(null, null);
-                    Debug.Log($"Applying Patch: `{method.DeclaringType?.FullName}:{method}`");
+                    log.WriteLine($"Applying Patch: `{method.DeclaringType?.FullName}:{method}`");
                 } catch (Exception e) {
-                    Debug.LogError($"Error running `{method.Name}`: {e}");
+                    log.WriteLine($"Error running `{method.Name}`: {e}");
                 }
             }
-        }
-
-        protected void DoAllUnloadedPatches() {
-            foreach (var method in GetAllMethodsWithIslandSceneLoaded<OnUnloadedAttribute>()) {
-                try {
-                    method.Invoke(null, null);
-                } catch (Exception e) {
-                    Debug.LogError($"Error running `{method.Name}`: {e}");
-                }
-            }
+            log.Flush();
         }
 
         private IEnumerable<MethodInfo> GetAllMethodsWithIslandSceneLoaded<T>() where T : Attribute {
@@ -96,12 +62,9 @@ namespace Base_Mod {
                    select method;
         }
 
-        protected string GetConfigPath() {
-            return Path.Combine(Application.persistentDataPath, "ModConfigs", ModName);
-        }
-
         protected string GetConfigFile() {
-            return Path.Combine(GetConfigPath(), $"{ModName}.json");
+            Directory.CreateDirectory(PersistentDataDir);
+            return Path.Combine(PersistentDataDir, $"{ModName}.json");
         }
     }
 }
