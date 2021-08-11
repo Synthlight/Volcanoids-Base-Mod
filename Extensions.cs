@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
+using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -77,6 +79,17 @@ namespace Base_Mod {
                 if (!done.Contains(component)) {
                     yield return component;
                 }
+            }
+        }
+
+        public static void Nop(this IReadOnlyList<CodeInstruction> il, int index) {
+            il.Nop(index, index);
+        }
+
+        public static void Nop(this IReadOnlyList<CodeInstruction> il, int start, int end) {
+            for (var i = start; i <= end; i++) {
+                il[i].opcode  = OpCodes.Nop;
+                il[i].operand = null;
             }
         }
     }
