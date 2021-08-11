@@ -13,6 +13,8 @@ namespace Base_Mod {
         protected abstract string ModName    { get; }
         protected virtual  bool   UseHarmony => false;
 
+        public new string PersistentDataDir => Path.Combine(Environment.GetEnvironmentVariable("USERPROFILE"), "AppData", "LocalLow", "Volcanoid", "Volcanoids", "PersistentModData", $"_{ModName}");
+
         public override void Load() {
             var log = new LogBuffer();
             log.Write($"{ModName} loading.");
