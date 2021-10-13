@@ -1,4 +1,7 @@
 {
     "LoadGroup": -100,
-    "Version": "1.0"
+    "Version": "1.0",
+    "UniqueModId": "Base-Mod-Greg",
+    "Title": "Base-Mod (Common Lib for Greg's Mods)",
+    "MultiplayerMode": 2
 }

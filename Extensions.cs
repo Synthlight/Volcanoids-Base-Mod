@@ -82,10 +82,12 @@ namespace Base_Mod {
             }
         }
 
+        [UsedImplicitly]
         public static void Nop(this IReadOnlyList<CodeInstruction> il, int index) {
             il.Nop(index, index);
         }
 
+        [UsedImplicitly]
         public static void Nop(this IReadOnlyList<CodeInstruction> il, int start, int end) {
             for (var i = start; i <= end; i++) {
                 il[i].opcode  = OpCodes.Nop;

@@ -10,10 +10,8 @@ using JetBrains.Annotations;
 namespace Base_Mod {
     [UsedImplicitly]
     public abstract class BaseGameMod : GameMod {
-        protected abstract string ModName    { get; }
-        protected virtual  bool   UseHarmony => false;
-
-        public new string PersistentDataDir => Path.Combine(Environment.GetEnvironmentVariable("USERPROFILE"), "AppData", "LocalLow", "Volcanoid", "Volcanoids", "PersistentModData", $"_{ModName}");
+        protected virtual bool   UseHarmony => false;
+        protected         string ModName    => Owner.Manifest.UniqueModId;
 
         public override void Load() {
             var log = new LogBuffer();
