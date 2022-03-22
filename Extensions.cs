@@ -94,5 +94,10 @@ namespace Base_Mod {
                 il[i].operand = null;
             }
         }
+
+        public static void AddToAssetDatabase(this Definition def) {
+            RuntimeAssetDatabase.Add(def);
+            Debug.Log($"Added Definition: {def.name}, {def.AssetId}");
+        }
     }
 }
