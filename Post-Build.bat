@@ -6,6 +6,12 @@ REM You need a full pdb, not a portable one. Add `<DebugType>full</DebugType>` i
 
 setlocal enabledelayedexpansion
 
+REM Remove the nonsense bullshit system/ms/netstandard dlls that I can't fucking stop VS from putting in the output dir.
+REM FUCK YOU VS!
+del "%~2"\System.*.dll
+del "%~2"\Microsoft.*.dll
+del "%~2"\netstandard*.dll
+
 set MonoPath=C:\Program Files\Unity\Editor\Data\MonoBleedingEdge
 
 for %%f in ("%~2*.dll") do (

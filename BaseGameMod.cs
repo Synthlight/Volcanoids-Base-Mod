@@ -5,10 +5,8 @@ using System.Linq;
 using System.Reflection;
 using Base_Mod.Models;
 using HarmonyLib;
-using JetBrains.Annotations;
 
 namespace Base_Mod {
-    [UsedImplicitly]
     public abstract class BaseGameMod : GameMod {
         protected virtual bool   UseHarmony => false;
         protected         string ModName    => Owner.Manifest.UniqueModId;

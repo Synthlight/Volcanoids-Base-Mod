@@ -99,5 +99,46 @@ namespace Base_Mod {
             RuntimeAssetDatabase.Add(def);
             Debug.Log($"Added Definition: {def.name}, {def.AssetId}");
         }
+
+        public static bool TryGetComponent<T>(this ItemDefinition item, out T component) {
+            component = default;
+            return item.Prefabs?.Length > 0 && item.Prefabs[0].TryGetComponent(out component);
+        }
+
+        public static bool TryGetComponent<T>(this ToolItemDefinition item, out T component) {
+            component = default;
+            return item.Prefab?.TryGetComponent(out component) == true;
+        }
+
+        public static bool HasComponent(this ItemDefinition item, Type type) {
+            return item.Prefabs?.Length > 0 && item.Prefabs[0].TryGetComponent(type, out _);
+        }
+
+        public static bool HasComponent(this ToolItemDefinition item, Type type) {
+            return item.Prefab?.TryGetComponent(type, out _) == true;
+        }
+
+        public static bool HasAny(this ItemDefinition item, params Type[] types) {
+            foreach (var type in types) {
+                if ((item is ToolItemDefinition tool && tool.HasComponent(type)) || item.HasComponent(type)) return true;
+            }
+            return false;
+        }
+
+        private static readonly PropertyInfo RUNTIME_METHOD_INFO_NAME = Type.GetType("System.Reflection.RuntimeMethodInfo")?.GetProperty("Name");
+
+        public static bool IsCall(this CodeInstruction inst, string methodName) {
+            if (inst.opcode != OpCodes.Call && inst.opcode != OpCodes.Callvirt && inst.opcode != OpCodes.Calli) return false;
+            var name = RUNTIME_METHOD_INFO_NAME.GetValue(inst.operand) as string;
+            return name == methodName;
+        }
+
+        public static bool ContainsIgnoreCase(this IEnumerable<string> arr, string needle) {
+            return arr.Any(s => string.Equals(s, needle, StringComparison.CurrentCultureIgnoreCase));
+        }
+
+        public static bool ContainsIgnoreCase(this string arr, string needle) {
+            return arr.Contains(needle, StringComparison.CurrentCultureIgnoreCase);
+        }
     }
 }
