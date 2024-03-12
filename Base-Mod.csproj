@@ -9,11 +9,12 @@
 		<Authors>Gregory</Authors>
 		<Company>None</Company>
 		<RootNamespace>Base_Mod</RootNamespace>
-		<DebugType>full</DebugType>
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
 		<CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+		<DebugType>full</DebugType>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<MSBuildWarningsAsMessages>MSB3277</MSBuildWarningsAsMessages>
+		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="HarmonyX" Version="2.5.4">
@@ -57,6 +58,6 @@
 		</None>
 	</ItemGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="call $(ProjectDir)Post-Build.bat &quot;$(TargetName)&quot; &quot;$(OutDir)&quot;"/>
+		<Exec Command="call $(ProjectDir)Post-Build.bat &quot;$(TargetName)&quot; &quot;$(OutDir)&quot;" />
 	</Target>
 </Project>
