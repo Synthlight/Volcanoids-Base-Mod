@@ -10,7 +10,7 @@ public static class Lib {
         if (RuntimeAssetDatabase.TryGetDefinition<ItemDefinition>(guid, out var asset)) {
             foreach (var prefab in asset.Prefabs) {
                 if (prefab.HasComponent<T>()) {
-                    yield return prefab;
+                    yield return prefab.gameObject;
                 }
             }
         }

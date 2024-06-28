@@ -84,6 +84,11 @@ public static class Extensions {
     }
 
     [UsedImplicitly]
+    public static bool HasComponent<T>(this MonoBehaviour thing) {
+        return thing.GetComponent<T>() != null;
+    }
+
+    [UsedImplicitly]
     public static void Nop(this IReadOnlyList<CodeInstruction> il, int index) {
         il.Nop(index, index);
     }
